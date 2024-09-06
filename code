@@ -1,0 +1,59 @@
+public class Bug {
+    private int bugId;
+    private String title;
+    private String description;
+    private String status;
+    private int reportedBy;
+    private int assignedTo;
+    private String createdDate;
+    private String priority;
+
+    // Constructor, Getters, Setters
+}
+public class User {
+    private int userId;
+    private String username;
+    private String password;
+    private String role;
+
+    // Constructor, Getters, Setters
+}
+public class DatabaseConnection {
+    private static final String URL = "jdbc:mysql://localhost:3306/bug_tracking";
+    private static final String USER = "root";
+    private static final String PASSWORD = "password";
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
+
+public void insertBug(Bug bug) {
+    String query = "INSERT INTO bugs (title, description, status, reported_by, assigned_to, created_date, priority) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setString(1, bug.getTitle());
+        pstmt.setString(2, bug.getDescription());
+        pstmt.setString(3, "Open");
+        pstmt.setInt(4, bug.getReportedBy());
+        pstmt.setInt(5, bug.getAssignedTo());
+        pstmt.setString(6, bug.getCreatedDate());
+        pstmt.setString(7, bug.getPriority());
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+public void updateBugStatus(int bugId, String status) {
+    String query = "UPDATE bugs SET status = ? WHERE bug_id = ?";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setString(1, status);
+        pstmt.setInt(2, bugId);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+
